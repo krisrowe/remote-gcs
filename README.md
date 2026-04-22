@@ -1,6 +1,6 @@
 # GCS-UP
 
-A dead-simple GCS uploader that handles encrypted keys automatically. No data is stored locally.
+A professional GCS uploader that handles encrypted keys automatically. 
 
 ## Installation
 ```bash
@@ -10,24 +10,45 @@ pipx install .
 ```
 
 ## Usage
-Provide the key path and bucket name for every upload. 
+The tool defaults to stateless mode. You must provide `--key` and `--bucket`.
 
-### With a standard JSON key:
-```bash
-gcs-up my-file.md --key sa.json --bucket my-bucket
-```
-
-### With an encrypted key:
-If your key ends in `.txt`, the tool automatically prompts for the passphrase.
+### 1. Stateless Mode (No data saved)
 ```bash
 gcs-up my-file.md --key my-access.txt --bucket my-bucket
-# Key 'my-access.txt' appears to be encrypted.
-# Enter decryption passphrase: 
-# Uploading my-file.md to gs://my-bucket...
-# Success!
+```
+
+### 2. Cached Mode (Optional)
+On your main machine, you can enable caching to save typing. This uses `XDG_CACHE_HOME` (usually `~/.cache/remote-gcs/`).
+
+**Enable Caching:**
+```bash
+gcs-up config enable --key my-access.txt --bucket my-bucket
+```
+
+**Simplified Usage (Once cached):**
+```bash
+gcs-up my-file.md
+```
+
+**Check Settings:**
+```bash
+gcs-up info
+```
+
+**Disable & Wipe Cache:**
+```bash
+gcs-up config disable
+```
+
+## Transport Security
+If your key is an encrypted `.txt` file, the tool will automatically prompt for the passphrase at upload time.
+
+**Transport Command:**
+```bash
+# Encrypt your key for transport
+openssl enc -aes-256-cbc -pbkdf2 -salt -a -in sa.json -out my-access.txt
 ```
 
 ## Security
-- **No Persistence**: This tool does not save your key path or bucket name.
-- **Secure Decryption**: Decrypted keys are stored in temporary files and deleted immediately after upload.
-- **Transport**: Uses `openssl` (AES-256-CBC) for decryption.
+- **Strict Isolation**: Cache is only used if explicitly enabled via `config enable`.
+- **Ephemeral Keys**: Decrypted JSON is stored in secure temporary files and deleted immediately after use.
