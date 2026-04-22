@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "remote-gcs"
+version = "0.1.0"
+description = "Simple GCS uploader with auto-decryption"
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+    "google-cloud-storage",
+]
+
+[project.scripts]
+gcs-up = "gcs_helper:main"
