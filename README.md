@@ -1,54 +1,47 @@
-# GCS-UP
+# RGCS - Remote GCS Utility
 
-A professional GCS uploader that handles encrypted keys automatically. 
+A conventional, portable CLI for transferring files to/from Google Cloud Storage with automatic key decryption.
 
 ## Installation
 ```bash
 git clone https://github.com/krisrowe/remote-gcs
-cd remote-gcs
-pipx install .
+pipx install ./remote-gcs
+```
+
+## Setup (Optional Caching)
+Enable caching to store your bucket name and key path in `XDG_CACHE_HOME`.
+```bash
+rgcs config enable --key my-access.txt --bucket my-bucket
 ```
 
 ## Usage
-The tool defaults to stateless mode. You must provide `--key` and `--bucket`.
 
-### 1. Stateless Mode (No data saved)
+### Upload a file
 ```bash
-gcs-up my-file.md --key my-access.txt --bucket my-bucket
+rgcs put my-file.md
+# (If not cached)
+rgcs put my-file.md --key my-access.txt --bucket my-bucket
 ```
 
-### 2. Cached Mode (Optional)
-On your main machine, you can enable caching to save typing. This uses `XDG_CACHE_HOME` (usually `~/.cache/remote-gcs/`).
-
-**Enable Caching:**
+### Download a file
 ```bash
-gcs-up config enable --key my-access.txt --bucket my-bucket
+rgcs get remote-file.txt
 ```
 
-**Simplified Usage (Once cached):**
+### Check Status / Wipe Cache
 ```bash
-gcs-up my-file.md
-```
-
-**Check Settings:**
-```bash
-gcs-up info
-```
-
-**Disable & Wipe Cache:**
-```bash
-gcs-up config disable
+rgcs info
+rgcs config disable
 ```
 
 ## Transport Security
-If your key is an encrypted `.txt` file, the tool will automatically prompt for the passphrase at upload time.
+If your key is an encrypted `.txt` file, `rgcs` will automatically prompt for the passphrase.
 
-**Transport Command:**
+**To create a transport file:**
 ```bash
-# Encrypt your key for transport
 openssl enc -aes-256-cbc -pbkdf2 -salt -a -in sa.json -out my-access.txt
 ```
 
 ## Security
-- **Strict Isolation**: Cache is only used if explicitly enabled via `config enable`.
-- **Ephemeral Keys**: Decrypted JSON is stored in secure temporary files and deleted immediately after use.
+- **No default persistence**: Settings are only saved if `config enable` is called.
+- **Secure cleanup**: Decrypted JSON keys are stored in temp files and deleted immediately after the operation.

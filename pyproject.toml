@@ -13,4 +13,4 @@ dependencies = [
 ]
 
 [project.scripts]
-gcs-up = "gcs_helper:main"
+rgcs = "gcs_helper:main"
